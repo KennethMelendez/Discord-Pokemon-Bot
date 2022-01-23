@@ -1,0 +1,16 @@
+{
+  "name": "discord-pokemon-bot",
+  "version": "1.0.0",
+  "description": "bot used to pull pokemon information",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^14.2.0",
+    "process": "^0.11.10"
+  }
+}
