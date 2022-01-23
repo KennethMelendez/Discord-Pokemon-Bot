@@ -1,6 +1,8 @@
 # Discord-Pokemon-Bot
 learning how to making discord bots for fun
 
+Uses a simple node server
+
 you can run this application by running 
  - npm install
  - node index.js
