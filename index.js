@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import http from 'http';
-import Discord from 'discord.js';
 import {Client, Intents} from 'discord.js';
 import 'dotenv/config';
 
@@ -8,8 +7,6 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS,Intents.FLAGS.GUILD_M
 const hostname = process.env.HOST_NAME;
 const port = process.env.PORT;
 
-
-// dotnav.config();
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -24,10 +21,11 @@ server.listen(port, hostname, () => {
   })
   
   client.on("message", msg => {
-    if(msg.content == "ping") {
-      msg.reply("pong");
-    } else if (msg.content == "hi") {
-      msg.reply("Wazzzapppp");
+
+    console.log(msg.content);
+
+    if (msg.content.toLowerCase() == "hello pokedex") {
+      msg.channel.send(`Hello ${msg.author.username}`);
     }
 
     if (msg.content.includes("pokedex #")) {
@@ -41,7 +39,7 @@ server.listen(port, hostname, () => {
             .then(data => {
                 console.log(data);
                 if(data != null) {
-                    msg.reply(data.sprites.front_default);
+                    msg.channel.send(`#${pokeNo} ${data.species.name.toUpperCase()} \n ${data.sprites.front_default} \n`);
                 }
             });
     }
