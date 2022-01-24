@@ -19,3 +19,5 @@ https://pokeapi.co/
 
 Right now the only command it has is 
 - __pokedex #<'insert pokedex number'>__.
+
+![image](https://user-images.githubusercontent.com/29358827/150720147-282c70b6-4842-46da-ab4e-389725473254.png)
