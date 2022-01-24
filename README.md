@@ -16,3 +16,6 @@ POKEMON_API_URL=""
 
 Pokemon Api is free to use for the public here
 https://pokeapi.co/
+
+Right now the only command it has is 
+- __pokedex #<'insert pokedex number'>__.
