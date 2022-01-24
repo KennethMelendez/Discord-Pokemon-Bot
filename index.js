@@ -20,7 +20,7 @@ server.listen(port, hostname, () => {
     console.log(`Logged in as ${client.user.tag}`);
   })
   
-  client.on("message", msg => {
+  client.on("messageCreate", msg => {
 
     console.log(msg.content);
 
@@ -35,13 +35,25 @@ server.listen(port, hostname, () => {
         pokeNo = pokeNo.join("");
         console.log(`PokeNo ${pokeNo} called`);
         const pokemonApi = new PokemonRepositoryApi(pokeNo);
+
+        try {
         pokemonApi.getPokemonData(pokeNo)
             .then(data => {
-                console.log(data);
                 if(data != null) {
-                    msg.channel.send(`#${pokeNo} ${data.species.name.toUpperCase()} \n ${data.sprites.front_default} \n`);
+                    msg.channel.send(
+                    {
+                      content:  `#${pokeNo} ${data.species.name.toUpperCase()}` ,
+                      files: [{
+                        attachment: data.sprites.front_default,
+                        name: `${data.species.name.toUpperCase()}.png`,
+                        description: `#${pokeNo}`
+                      }]
+                    });
                 }
             });
+        } catch (e) {
+          console.log(e.message());
+        }
     }
 
   })
@@ -55,5 +67,9 @@ class PokemonRepositoryApi {
     getPokemonData(pokeNo){
         return fetch(`${process.env.POKEMON_API_URL}${pokeNo}`)
             .then(response => response.json());
+    }
+
+    getPokemonSpeciesData(pokeNo){
+        return fetch(`${process.env.POKEMON_API_URL_DESC}${pokeNo}`)
     }
 }
