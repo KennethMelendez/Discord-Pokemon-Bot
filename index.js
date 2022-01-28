@@ -14,61 +14,55 @@ const server = http.createServer((req, res) => {
   res.setHeader("Content-Type", "text/plain");
   res.end("Hello World");
 });
+const onReady = () => {
+  console.log(`Logged in as ${client.user.tag}`);
+};
+const onMessageCreateAsync = async (msg) => {
+  console.log(msg.content);
+
+  if (msg.content.toLowerCase() == "hello pokedex") {
+    msg.channel.send(`Hello ${msg.author.username}`);
+  }
+
+  if (!msg.content.includes("pokedex #")) return;
+
+  const currentMsg = msg.content;
+  let pokeNo = currentMsg.split("");
+  pokeNo.splice(0, 9);
+  pokeNo = pokeNo.join("");
+  console.log(`PokeNo ${pokeNo} called`);
+
+  const pokemonApi = new PokemonRepositoryApi();
+  try {
+    const data = await pokemonApi.getPokemonData(pokeNo);
+    if (!data) throw new Exception("Pokemon does not exist.");
+    msg.channel.send({
+      content: `#${pokeNo} ${data.species.name.toUpperCase()}`,
+      files: [
+        {
+          attachment: data.sprites.front_default,
+          name: `${data.species.name.toUpperCase()}.png`,
+          description: `#${pokeNo}`,
+        },
+      ],
+    });
+  } catch (e) {
+    msg.channel.send("Pokemon does not exist.");
+    console.log(e);
+  }
+};
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
-  client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}`);
-  });
+  client.on("ready", onReady);
 
-  client.on("messageCreate", (msg) => {
-    console.log(msg.content);
-
-    if (msg.content.toLowerCase() == "hello pokedex") {
-      msg.channel.send(`Hello ${msg.author.username}`);
-    }
-
-    if (msg.content.includes("pokedex #")) {
-      const currentMsg = msg.content;
-      let pokeNo = currentMsg.split("");
-      pokeNo.splice(0, 9);
-      pokeNo = pokeNo.join("");
-      console.log(`PokeNo ${pokeNo} called`);
-
-      const pokemonApi = new PokemonRepositoryApi();
-
-      pokemonApi
-        .getPokemonData(pokeNo)
-        .then((data) => {
-          try {
-            if (data != null || data != undefined) {
-              msg.channel.send({
-                content: `#${pokeNo} ${data.species.name.toUpperCase()}`,
-                files: [
-                  {
-                    attachment: data.sprites.front_default,
-                    name: `${data.species.name.toUpperCase()}.png`,
-                    description: `#${pokeNo}`,
-                  },
-                ],
-              });
-            }
-          } catch (e) {
-            msg.channel.send('Pokemon does not exist.');
-            console.log(e.message);
-          }
-        })
-        .catch((error) => {
-          msg.channel.send('Pokemon does not exist.');
-          console.log(error);
-        });
-    }
-  });
+  client.on("messageCreate", onMessageCreateAsync);
 
   const mySecret = process.env.TOKEN;
   client.login(mySecret);
 });
 
+//TODO: Move to another class file
 class PokemonRepositoryApi {
   getPokemonData(pokeNo) {
     return fetch(`${process.env.POKEMON_API_URL}${pokeNo}`).then((response) => {
